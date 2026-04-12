@@ -1,0 +1,425 @@
+/* Urban Spoon — modern Apple / iOS aesthetic */
+
+:root {
+  /* iOS system color tokens (approximations of UIColor systemX) */
+  --bg: #f2f2f7;            /* systemGroupedBackground */
+  --bg-elev: #ffffff;       /* secondarySystemGroupedBackground */
+  --bg-tint: #e5e5ea;       /* systemGray5 */
+  --separator: rgba(60, 60, 67, 0.12);
+  --label: #1c1c1e;         /* label */
+  --label-2: rgba(60, 60, 67, 0.78); /* secondaryLabel */
+  --label-3: rgba(60, 60, 67, 0.45); /* tertiaryLabel */
+  /* Brand palette — twilight blue + cypress green */
+  --tint: #3d5a80;          /* twilight blue — primary tint */
+  --tint-2: #5a7ba8;
+  --green: #5b7553;         /* cypress green — price / accent */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  --font:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --bg-elev: #1c1c1e;
+    --bg-tint: #2c2c2e;
+    --separator: rgba(84, 84, 88, 0.65);
+    --label: #ffffff;
+    --label-2: rgba(235, 235, 245, 0.6);
+    --label-3: rgba(235, 235, 245, 0.3);
+    /* Brand palette — twilight + cypress lifted for dark mode legibility */
+    --tint: #5a7ba8;
+    --tint-2: #7a98c4;
+    --green: #6e8c64;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font);
+  color: var(--label);
+  background: var(--bg);
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ----- Top navigation bar (iOS style) ----- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  height: 44px;
+  padding: 0 8px;
+  padding-top: env(safe-area-inset-top);
+  background: rgba(242, 242, 247, 0.78);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--separator);
+}
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: rgba(0, 0, 0, 0.72);
+  }
+}
+.navtitle {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--label);
+}
+.navbtn,
+.navbtn-spacer {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.navbtn {
+  background: transparent;
+  border: 0;
+  color: var(--tint);
+  cursor: pointer;
+}
+.navbtn:active { opacity: 0.5; }
+
+/* ----- Main content ----- */
+.content {
+  padding: 8px 20px 32px;
+}
+
+/* iOS large title */
+.largetitle {
+  margin: 16px 0 4px;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--label);
+}
+.subtitle {
+  margin: 0 0 24px;
+  font-size: 15px;
+  color: var(--label-2);
+  letter-spacing: -0.1px;
+}
+
+/* ----- Picker card (the slot machine surface) ----- */
+.picker-card {
+  background: var(--bg-elev);
+  border-radius: 18px;
+  padding: 6px 10px 14px;
+  box-shadow: var(--shadow-card);
+}
+
+.reels {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+}
+
+.reel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.reel-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 6px 6px;
+  min-width: 0;
+}
+.reel-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--label-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  transition: color 0.15s ease;
+}
+.reel.locked .reel-label {
+  color: var(--tint);
+}
+
+/* ----- The picker wheel window ----- */
+.window {
+  position: relative;
+  height: 132px;
+  border-radius: 12px;
+  background: var(--bg-tint);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+.reel.locked .window {
+  box-shadow: inset 0 0 0 2px var(--tint);
+}
+
+/* Center selection band — iOS UIPickerView style */
+.selection-band {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 50%;
+  height: 36px;
+  margin-top: -18px;
+  border-radius: 8px;
+  background: rgba(120, 120, 128, 0.16);
+  pointer-events: none;
+  z-index: 1;
+}
+@media (prefers-color-scheme: dark) {
+  .selection-band {
+    background: rgba(120, 120, 128, 0.32);
+  }
+}
+
+/* Top/bottom fade so off-center rows feel "wheel-like" */
+.window::before,
+.window::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 48px;
+  pointer-events: none;
+  z-index: 2;
+}
+.window::before {
+  top: 0;
+  background: linear-gradient(180deg, var(--bg-tint), transparent);
+}
+.window::after {
+  bottom: 0;
+  background: linear-gradient(0deg, var(--bg-tint), transparent);
+}
+
+.strip {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+
+.strip li {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  color: var(--label);
+  text-align: center;
+  padding: 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.strip li.price {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.reel.spinning .strip {
+  filter: blur(1.2px);
+}
+
+/* ----- Primary spin button (iOS prominent button) ----- */
+.spin-btn {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 16px 0;
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+  background: var(--tint);
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.spin-btn:active {
+  opacity: 0.85;
+  transform: scale(0.99);
+}
+.spin-btn:disabled { opacity: 0.5; cursor: default; }
+
+.hint {
+  margin: 14px 4px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--label-3);
+  letter-spacing: -0.1px;
+}
+
+/* ----- Bottom sheet (iOS .pageSheet / formSheet style) ----- */
+.sheet {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+.sheet[hidden] { display: none; }
+
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(60px); }
+  to { transform: translateY(0); }
+}
+
+.sheet-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-elev);
+  color: var(--label);
+  border-radius: 16px 16px 0 0;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  animation: slideUp 0.32s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+.grabber {
+  width: 36px;
+  height: 5px;
+  margin: 8px auto 0;
+  border-radius: 999px;
+  background: rgba(60, 60, 67, 0.3);
+}
+@media (prefers-color-scheme: dark) {
+  .grabber { background: rgba(235, 235, 245, 0.3); }
+}
+
+.sheet-content {
+  padding: 16px 20px 20px;
+}
+
+.result-name {
+  margin: 4px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+.result-meta {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  display: inline-block;
+  padding: 5px 11px;
+  background: var(--bg-tint);
+  color: var(--label);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.1px;
+}
+.tag.price {
+  background: var(--green);
+  color: #ffffff;
+}
+
+.result-rating {
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--label-2);
+}
+
+.result-actions {
+  margin-top: 22px;
+  display: flex;
+  gap: 10px;
+}
+.btn-secondary,
+.btn-primary {
+  flex: 1;
+  padding: 14px 0;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 0;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.btn-secondary {
+  background: var(--bg-tint);
+  color: var(--label);
+}
+.btn-primary {
+  background: var(--tint);
+  color: #ffffff;
+}
+.btn-secondary:active,
+.btn-primary:active {
+  opacity: 0.85;
+  transform: scale(0.99);
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 360px) {
+  .strip li { font-size: 14px; }
+  .reel-label { font-size: 10px; }
+}

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <title>Urban Spoon</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="navbar">
+        <button class="navbtn" id="enableMotionBtn" aria-label="Enable shake to spin">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm5 17.2a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z"
+            />
+          </svg>
+        </button>
+        <div class="navtitle">Urbanspoon</div>
+        <div class="navbtn-spacer"></div>
+      </header>
+
+      <main class="content">
+        <h1 class="largetitle">Urbanspoon</h1>
+        <p class="subtitle">Shake, spin, eat.</p>
+
+        <section class="picker-card">
+          <div class="reels" id="reels">
+            <div class="reel" data-reel="neighborhood">
+              <div class="reel-header">
+                <span class="reel-label">Area</span>
+              </div>
+              <div class="window">
+                <div class="selection-band"></div>
+                <ul class="strip" data-strip="neighborhood"></ul>
+              </div>
+            </div>
+
+            <div class="reel" data-reel="cuisine">
+              <div class="reel-header">
+                <span class="reel-label">Cuisine</span>
+              </div>
+              <div class="window">
+                <div class="selection-band"></div>
+                <ul class="strip" data-strip="cuisine"></ul>
+              </div>
+            </div>
+
+            <div class="reel" data-reel="price">
+              <div class="reel-header">
+                <span class="reel-label">Price</span>
+              </div>
+              <div class="window">
+                <div class="selection-band"></div>
+                <ul class="strip" data-strip="price"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <button class="spin-btn" id="spinBtn">Spin</button>
+        <p class="hint">Tap a row to lock it. Shake your phone to spin.</p>
+      </main>
+
+      <!-- Result sheet -->
+      <section class="sheet" id="result" hidden>
+        <div class="sheet-backdrop" id="sheetBackdrop"></div>
+        <div class="sheet-card">
+          <div class="grabber"></div>
+          <div class="sheet-content">
+            <h2 class="result-name" id="resultName"></h2>
+            <div class="result-meta">
+              <span class="tag" id="resultCuisine"></span>
+              <span class="tag" id="resultNeighborhood"></span>
+              <span class="tag price" id="resultPrice"></span>
+            </div>
+            <div class="result-rating" id="resultRating"></div>
+            <div class="result-actions">
+              <button class="btn-secondary" id="rejectBtn">Nope, again</button>
+              <button class="btn-primary" id="acceptBtn">Looks good</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="data.js"></script>
+    <script src="places.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
