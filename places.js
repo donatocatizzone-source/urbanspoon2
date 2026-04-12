@@ -118,7 +118,7 @@
         "Content-Type": "application/json",
         "X-Goog-Api-Key": cfg.GOOGLE_PLACES_API_KEY,
         "X-Goog-FieldMask":
-          "places.displayName,places.primaryType,places.types,places.priceLevel,places.rating,places.addressComponents",
+          "places.id,places.displayName,places.primaryType,places.types,places.priceLevel,places.rating,places.addressComponents,places.googleMapsUri",
       },
       body: JSON.stringify(body),
     });
@@ -142,7 +142,9 @@
           ? PRICE_MAP[p.priceLevel]
           : 1; // default to $$
         const rating = typeof p.rating === "number" ? p.rating : 4.0;
-        return { name, cuisine, neighborhood, price, rating };
+        const placeId = p.id || null;
+        const mapsUrl = p.googleMapsUri || null;
+        return { name, cuisine, neighborhood, price, rating, placeId, mapsUrl };
       })
       .filter(Boolean);
   }
@@ -162,6 +164,42 @@
     window.RESTAURANTS = restaurants;
     return true;
   }
+
+  // ----- Place Details (lazy, on selection) -----
+  // Fetches rich details for a single place: address, phone, hours, website, photo.
+  window.fetchPlaceDetails = async function fetchPlaceDetails(placeId) {
+    if (!placeId) return null;
+    const cfg = window.APP_CONFIG || {};
+    if (!cfg.GOOGLE_PLACES_API_KEY) return null;
+
+    const url = `https://places.googleapis.com/v1/places/${placeId}`;
+    const res = await fetch(url, {
+      headers: {
+        "X-Goog-Api-Key": cfg.GOOGLE_PLACES_API_KEY,
+        "X-Goog-FieldMask":
+          "formattedAddress,nationalPhoneNumber,internationalPhoneNumber,websiteUri,currentOpeningHours.openNow,currentOpeningHours.weekdayDescriptions,photos,googleMapsUri",
+      },
+    });
+    if (!res.ok) return null;
+    const d = await res.json();
+
+    // Build a photo URL from the first photo reference
+    let photoUrl = null;
+    if (d.photos && d.photos.length > 0) {
+      const photoName = d.photos[0].name; // e.g. "places/xxx/photos/yyy"
+      photoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=600&key=${cfg.GOOGLE_PLACES_API_KEY}`;
+    }
+
+    return {
+      address: d.formattedAddress || null,
+      phone: d.nationalPhoneNumber || d.internationalPhoneNumber || null,
+      website: d.websiteUri || null,
+      mapsUrl: d.googleMapsUri || null,
+      openNow: d.currentOpeningHours ? d.currentOpeningHours.openNow : null,
+      hours: d.currentOpeningHours ? d.currentOpeningHours.weekdayDescriptions : null,
+      photoUrl,
+    };
+  };
 
   // Default fallback when geolocation isn't granted (downtown Seattle).
   // Lets the user still see real Places data even without location permission.

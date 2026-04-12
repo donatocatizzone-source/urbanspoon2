@@ -163,12 +163,56 @@
     });
   }
 
+  // Cat Mode override: set by catmode.js before triggering a spin.
+  // { cuisine: "Indian", forcePrice: 2 | null }
+  let catModeOverride = null;
+
+  function pickWithCatOverride() {
+    const ov = catModeOverride;
+    catModeOverride = null; // consume it — one-shot
+    const cuisineLower = (ov.cuisine || "").toLowerCase();
+
+    let candidates = RESTAURANTS.filter((r) => {
+      const rc = r.cuisine.toLowerCase();
+      return rc === cuisineLower || rc.includes(cuisineLower) || cuisineLower.includes(rc);
+    });
+    if (ov.forcePrice != null) {
+      const priceFiltered = candidates.filter((r) => r.price >= ov.forcePrice);
+      if (priceFiltered.length > 0) candidates = priceFiltered;
+    }
+    if (candidates.length === 0) {
+      showToast("No " + ov.cuisine + " nearby — picking a wild card!");
+      return pickDistinct(RESTAURANTS);
+    }
+    return pickDistinct(candidates);
+  }
+
+  function showToast(msg) {
+    let toast = document.getElementById("catToast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "catToast";
+      toast.className = "cat-toast";
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add("visible");
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove("visible"), 3000);
+  }
+
+  // Exposed for catmode.js
+  window.catModeSpin = function (cuisine, forcePrice) {
+    catModeOverride = { cuisine, forcePrice: forcePrice != null ? forcePrice : null };
+    spin();
+  };
+
   async function spin() {
     if (isSpinning) return;
     isSpinning = true;
     hideResult();
 
-    const choice = pickRestaurant();
+    const choice = catModeOverride ? pickWithCatOverride() : pickRestaurant();
     const targets = {
       neighborhood: choice.neighborhood,
       cuisine: choice.cuisine,
@@ -205,14 +249,72 @@
   const resultNeighborhood = document.getElementById("resultNeighborhood");
   const resultPrice = document.getElementById("resultPrice");
   const resultRating = document.getElementById("resultRating");
+  const resultPhotoWrap = document.getElementById("resultPhotoWrap");
+  const resultPhoto = document.getElementById("resultPhoto");
+  const resultOpenRow = document.getElementById("resultOpenRow");
+  const resultOpen = document.getElementById("resultOpen");
+  const resultAddressRow = document.getElementById("resultAddressRow");
+  const resultAddress = document.getElementById("resultAddress");
+  const resultPhoneRow = document.getElementById("resultPhoneRow");
+  const resultPhone = document.getElementById("resultPhone");
+  const resultWebsiteRow = document.getElementById("resultWebsiteRow");
+  const resultWebsite = document.getElementById("resultWebsite");
+  const resultMapsBtn = document.getElementById("resultMapsBtn");
+
+  function resetDetails() {
+    resultPhotoWrap.hidden = true;
+    resultPhoto.src = "";
+    resultOpenRow.hidden = true;
+    resultAddressRow.hidden = true;
+    resultPhoneRow.hidden = true;
+    resultWebsiteRow.hidden = true;
+    resultMapsBtn.href = "#";
+  }
 
   function showResult(r) {
+    resetDetails();
     resultName.textContent = r.name;
     resultCuisine.textContent = r.cuisine;
     resultNeighborhood.textContent = r.neighborhood;
     resultPrice.textContent = STRIPS.price[r.price];
-    resultRating.textContent = `★ ${r.rating.toFixed(1)} / 5.0`;
+    resultRating.textContent = "\u2605 " + r.rating.toFixed(1) + " / 5.0";
+
+    // Maps link from nearby search (immediate, even before details load)
+    if (r.mapsUrl) resultMapsBtn.href = r.mapsUrl;
+
     resultEl.hidden = false;
+
+    // Fetch rich details asynchronously
+    if (r.placeId && typeof window.fetchPlaceDetails === "function") {
+      window.fetchPlaceDetails(r.placeId).then((d) => {
+        if (!d || resultEl.hidden) return; // dismissed while loading
+        if (d.photoUrl) {
+          resultPhoto.src = d.photoUrl;
+          resultPhotoWrap.hidden = false;
+        }
+        if (d.openNow != null) {
+          resultOpen.textContent = d.openNow ? "Open now" : "Closed";
+          resultOpen.className = "detail-text " + (d.openNow ? "open" : "closed");
+          resultOpenRow.hidden = false;
+        }
+        if (d.address) {
+          resultAddress.textContent = d.address;
+          resultAddressRow.hidden = false;
+        }
+        if (d.phone) {
+          resultPhone.textContent = d.phone;
+          resultPhone.href = "tel:" + d.phone.replace(/\s/g, "");
+          resultPhoneRow.hidden = false;
+        }
+        if (d.website) {
+          const host = new URL(d.website).hostname.replace("www.", "");
+          resultWebsite.textContent = host;
+          resultWebsite.href = d.website;
+          resultWebsiteRow.hidden = false;
+        }
+        if (d.mapsUrl) resultMapsBtn.href = d.mapsUrl;
+      }).catch(() => {}); // fail silently, basic info is already shown
+    }
   }
   function hideResult() {
     resultEl.hidden = true;
@@ -222,7 +324,6 @@
     hideResult();
     spin();
   });
-  document.getElementById("acceptBtn").addEventListener("click", hideResult);
   document.getElementById("sheetBackdrop").addEventListener("click", hideResult);
 
   // ----- Spin button -----

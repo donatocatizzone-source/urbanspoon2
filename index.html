@@ -12,6 +12,7 @@
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <title>Urban Spoon</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="catmode.css" />
   </head>
   <body>
     <div class="app">
@@ -76,6 +77,9 @@
         <div class="sheet-card">
           <div class="grabber"></div>
           <div class="sheet-content">
+            <div class="result-photo-wrap" id="resultPhotoWrap" hidden>
+              <img class="result-photo" id="resultPhoto" alt="" />
+            </div>
             <h2 class="result-name" id="resultName"></h2>
             <div class="result-meta">
               <span class="tag" id="resultCuisine"></span>
@@ -83,9 +87,27 @@
               <span class="tag price" id="resultPrice"></span>
             </div>
             <div class="result-rating" id="resultRating"></div>
+            <div class="result-details" id="resultDetails">
+              <div class="detail-row" id="resultOpenRow" hidden>
+                <span class="detail-icon">●</span>
+                <span class="detail-text" id="resultOpen"></span>
+              </div>
+              <div class="detail-row" id="resultAddressRow" hidden>
+                <span class="detail-icon">📍</span>
+                <span class="detail-text" id="resultAddress"></span>
+              </div>
+              <div class="detail-row" id="resultPhoneRow" hidden>
+                <span class="detail-icon">📞</span>
+                <a class="detail-link" id="resultPhone"></a>
+              </div>
+              <div class="detail-row" id="resultWebsiteRow" hidden>
+                <span class="detail-icon">🌐</span>
+                <a class="detail-link" id="resultWebsite" target="_blank" rel="noopener"></a>
+              </div>
+            </div>
             <div class="result-actions">
-              <button class="btn-secondary" id="rejectBtn">Nope, again</button>
-              <button class="btn-primary" id="acceptBtn">Looks good</button>
+              <button class="btn-secondary" id="rejectBtn">Re-roll</button>
+              <a class="btn-primary" id="resultMapsBtn" href="#" target="_blank" rel="noopener">Open in Maps</a>
             </div>
           </div>
         </div>
@@ -96,5 +118,6 @@
     <script src="data.js"></script>
     <script src="places.js"></script>
     <script src="app.js"></script>
+    <script src="catmode.js"></script>
   </body>
 </html>
