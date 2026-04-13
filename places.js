@@ -118,7 +118,7 @@
         "Content-Type": "application/json",
         "X-Goog-Api-Key": cfg.GOOGLE_PLACES_API_KEY,
         "X-Goog-FieldMask":
-          "places.id,places.displayName,places.primaryType,places.types,places.priceLevel,places.rating,places.addressComponents,places.googleMapsUri",
+          "places.id,places.displayName,places.primaryType,places.types,places.priceLevel,places.rating,places.addressComponents,places.googleMapsUri,places.currentOpeningHours",
       },
       body: JSON.stringify(body),
     });
@@ -144,7 +144,8 @@
         const rating = typeof p.rating === "number" ? p.rating : 4.0;
         const placeId = p.id || null;
         const mapsUrl = p.googleMapsUri || null;
-        return { name, cuisine, neighborhood, price, rating, placeId, mapsUrl };
+        const openNow = p.currentOpeningHours ? p.currentOpeningHours.openNow : null;
+        return { name, cuisine, neighborhood, price, rating, placeId, mapsUrl, openNow };
       })
       .filter(Boolean);
   }

@@ -1,18 +1,16 @@
 /* Urban Spoon — modern Apple / iOS aesthetic */
 
 :root {
-  /* iOS system color tokens (approximations of UIColor systemX) */
-  --bg: #f2f2f7;            /* systemGroupedBackground */
-  --bg-elev: #ffffff;       /* secondarySystemGroupedBackground */
-  --bg-tint: #e5e5ea;       /* systemGray5 */
+  --bg: #f2f2f7;
+  --bg-elev: #ffffff;
+  --bg-tint: #e5e5ea;
   --separator: rgba(60, 60, 67, 0.12);
-  --label: #1c1c1e;         /* label */
-  --label-2: rgba(60, 60, 67, 0.78); /* secondaryLabel */
-  --label-3: rgba(60, 60, 67, 0.45); /* tertiaryLabel */
-  /* Brand palette — twilight blue + cypress green */
-  --tint: #3d5a80;          /* twilight blue — primary tint */
+  --label: #1c1c1e;
+  --label-2: rgba(60, 60, 67, 0.78);
+  --label-3: rgba(60, 60, 67, 0.45);
+  --tint: #3d5a80;
   --tint-2: #5a7ba8;
-  --green: #5b7553;         /* cypress green — price / accent */
+  --green: #5b7553;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
 
   --font:
@@ -29,7 +27,6 @@
     --label: #ffffff;
     --label-2: rgba(235, 235, 245, 0.6);
     --label-3: rgba(235, 235, 245, 0.3);
-    /* Brand palette — twilight + cypress lifted for dark mode legibility */
     --tint: #5a7ba8;
     --tint-2: #7a98c4;
     --green: #6e8c64;
@@ -70,7 +67,7 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ----- Top navigation bar (iOS style) ----- */
+/* ----- Navbar ----- */
 .navbar {
   position: sticky;
   top: 0;
@@ -98,15 +95,12 @@ body {
   letter-spacing: -0.2px;
   color: var(--label);
 }
-.navbtn,
-.navbtn-spacer {
+.navbtn {
   width: 44px;
   height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-.navbtn {
   background: transparent;
   border: 0;
   color: var(--tint);
@@ -114,12 +108,11 @@ body {
 }
 .navbtn:active { opacity: 0.5; }
 
-/* ----- Main content ----- */
+/* ----- Content ----- */
 .content {
-  padding: 8px 20px 32px;
+  padding: 8px 20px 40px;
 }
 
-/* iOS large title */
 .largetitle {
   margin: 16px 0 4px;
   font-size: 34px;
@@ -128,150 +121,139 @@ body {
   color: var(--label);
 }
 .subtitle {
-  margin: 0 0 24px;
+  margin: 0 0 28px;
   font-size: 15px;
   color: var(--label-2);
   letter-spacing: -0.1px;
 }
 
-/* ----- Picker card (the slot machine surface) ----- */
-.picker-card {
+/* ----- Filter card (iOS Settings style) ----- */
+.filter-card {
   background: var(--bg-elev);
-  border-radius: 18px;
-  padding: 6px 10px 14px;
+  border-radius: 14px;
   box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
 }
 
-.reels {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
-}
-
-.reel {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-width: 0;
-}
-
-.reel-header {
+.filter-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 12px 6px 6px;
-  min-width: 0;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+  border-bottom: 0.5px solid var(--separator);
 }
-.reel-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
+.filter-row:last-child { border-bottom: none; }
+.filter-row:active { background: var(--bg-tint); }
+.filter-row.toggle { cursor: default; }
+.filter-row.toggle:active { background: transparent; }
+
+.filter-row-label {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--label);
+}
+
+.filter-row-value {
+  font-size: 16px;
   color: var(--label-3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
+  margin-right: 6px;
   transition: color 0.15s ease;
 }
-.reel.locked .reel-label {
+.filter-row-value.has-value {
   color: var(--tint);
+  font-weight: 500;
 }
 
-/* ----- The picker wheel window ----- */
-.window {
-  position: relative;
-  height: 132px;
-  border-radius: 12px;
-  background: var(--bg-tint);
+.filter-chevron {
+  color: var(--label-3);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.filter-row.expanded .filter-chevron {
+  transform: rotate(90deg);
+}
+
+/* Expandable options tray */
+.filter-options {
+  max-height: 0;
   overflow: hidden;
-  cursor: pointer;
-  transition: box-shadow 0.2s ease;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg);
 }
-.reel.locked .window {
-  box-shadow: inset 0 0 0 2px var(--tint);
+.filter-options.open {
+  max-height: 240px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
+.filter-options::-webkit-scrollbar { display: none; }
 
-/* Center selection band — iOS UIPickerView style */
-.selection-band {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  top: 50%;
-  height: 36px;
-  margin-top: -18px;
-  border-radius: 8px;
-  background: rgba(120, 120, 128, 0.16);
-  pointer-events: none;
-  z-index: 1;
-}
-@media (prefers-color-scheme: dark) {
-  .selection-band {
-    background: rgba(120, 120, 128, 0.32);
-  }
-}
-
-/* Top/bottom fade so off-center rows feel "wheel-like" */
-.window::before,
-.window::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 48px;
-  pointer-events: none;
-  z-index: 2;
-}
-.window::before {
-  top: 0;
-  background: linear-gradient(180deg, var(--bg-tint), transparent);
-}
-.window::after {
-  bottom: 0;
-  background: linear-gradient(0deg, var(--bg-tint), transparent);
-}
-
-.strip {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1);
-}
-
-.strip li {
-  height: 36px;
+.option-item {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 11px 16px 11px 32px;
   font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
   color: var(--label);
-  text-align: center;
-  padding: 0 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  border-bottom: 0.5px solid var(--separator);
 }
-.strip li.price {
-  font-size: 17px;
+.option-item:last-child { border-bottom: none; }
+.option-item:active { background: var(--bg-tint); }
+.option-item.selected {
+  color: var(--tint);
   font-weight: 600;
-  color: var(--green);
+}
+.option-item.selected::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: var(--tint);
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 6l2.5 2.5L9.5 4' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
+  flex-shrink: 0;
 }
 
-.reel.spinning .strip {
-  filter: blur(1.2px);
+.toggle-switch {
+  position: relative;
+  width: 51px;
+  height: 31px;
+  border-radius: 16px;
+  background: var(--bg-tint);
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s ease;
+}
+.toggle-switch.on {
+  background: var(--green);
+}
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.toggle-switch.on .toggle-knob {
+  transform: translateX(20px);
 }
 
-/* ----- Primary spin button (iOS prominent button) ----- */
-.spin-btn {
+/* ----- Discover button ----- */
+.discover-btn {
+  position: relative;
   display: block;
   width: 100%;
-  margin-top: 24px;
   padding: 16px 0;
   font-family: var(--font);
   font-size: 17px;
@@ -282,13 +264,28 @@ body {
   border: 0;
   border-radius: 14px;
   cursor: pointer;
+  overflow: hidden;
   transition: opacity 0.15s ease, transform 0.1s ease;
 }
-.spin-btn:active {
+.discover-btn:active {
   opacity: 0.85;
   transform: scale(0.99);
 }
-.spin-btn:disabled { opacity: 0.5; cursor: default; }
+.discover-btn.loading {
+  pointer-events: none;
+}
+.discover-btn.loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  animation: btnShimmer 1s ease infinite;
+}
+@keyframes btnShimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
 
 .hint {
   margin: 14px 4px 0;
@@ -298,7 +295,7 @@ body {
   letter-spacing: -0.1px;
 }
 
-/* ----- Bottom sheet (iOS .pageSheet / formSheet style) ----- */
+/* ----- Bottom sheet ----- */
 .sheet {
   position: fixed;
   inset: 0;
@@ -320,8 +317,8 @@ body {
   to { opacity: 1; }
 }
 @keyframes slideUp {
-  from { transform: translateY(60px); }
-  to { transform: translateY(0); }
+  from { transform: translateY(60px); opacity: 0.5; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .sheet-card {
@@ -353,10 +350,60 @@ body {
   padding: 16px 20px 20px;
 }
 
+/* ----- Skeleton loading state ----- */
+.sheet-card.skeleton .sheet-content {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.sheet-card.skeleton .result-title-row,
+.sheet-card.skeleton .result-meta,
+.sheet-card.skeleton .result-rating,
+.sheet-card.skeleton .result-details,
+.sheet-card.skeleton .result-actions {
+  display: none;
+}
+.sheet-card.skeleton .sheet-content::before {
+  content: "";
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--bg-tint);
+  border-top-color: var(--tint);
+  animation: skeletonSpin 0.7s linear infinite;
+}
+.sheet-card.skeleton .sheet-content::after {
+  content: "Finding your spot...";
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--label-3);
+  letter-spacing: -0.1px;
+  animation: skeletonPulse 1.2s ease-in-out infinite;
+}
+@keyframes skeletonSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Reveal transition */
+.sheet-card.reveal .sheet-content {
+  animation: resultReveal 0.35s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+@keyframes resultReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ----- Result photo ----- */
 .result-photo-wrap {
   margin: 0 -20px 14px;
-  height: 180px;
+  height: 200px;
   overflow: hidden;
   background: var(--bg-tint);
 }
@@ -366,6 +413,16 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.result-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.result-title-row .result-name {
+  flex: 1;
+  min-width: 0;
 }
 
 .result-name {
@@ -423,6 +480,7 @@ body {
   text-align: center;
   font-size: 14px;
   line-height: 20px;
+  color: var(--label-3);
 }
 .detail-text,
 .detail-link {
@@ -443,7 +501,6 @@ body {
   color: var(--tint);
   font-weight: 600;
 }
-.detail-row .detail-icon:first-child { color: var(--label-3); }
 
 .result-actions {
   margin-top: 22px;
@@ -482,8 +539,162 @@ body {
   transform: scale(0.99);
 }
 
+/* ----- Favorite button ----- */
+.fav-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+}
+.fav-btn .fav-outline {
+  fill: none;
+  stroke: var(--label-3);
+  stroke-width: 2;
+  transition: opacity 0.2s ease;
+}
+.fav-btn .fav-filled {
+  fill: #ff3b30;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+  transform-origin: center;
+}
+.fav-btn[aria-pressed="true"] .fav-outline { opacity: 0; }
+.fav-btn[aria-pressed="true"] .fav-filled {
+  opacity: 1;
+  animation: favPop 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+@keyframes favPop {
+  0% { transform: scale(0.5); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ----- History carousel ----- */
+.history-section {
+  margin-top: 32px;
+}
+.history-section[hidden] { display: none; }
+.section-header {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--label);
+}
+.history-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 4px;
+}
+.history-scroll::-webkit-scrollbar { display: none; }
+.history-card {
+  flex-shrink: 0;
+  width: 140px;
+  scroll-snap-align: start;
+  background: var(--bg-elev);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.history-card:active { transform: scale(0.97); }
+.history-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--label);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-card-cuisine {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--label-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-card-price {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+}
+
+/* ----- Favorites list ----- */
+.fav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 16px;
+}
+.fav-empty {
+  text-align: center;
+  font-size: 15px;
+  color: var(--label-3);
+  margin-top: 32px;
+}
+.fav-empty[hidden] { display: none; }
+.fav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 0.5px solid var(--separator);
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+}
+.fav-item:active { opacity: 0.6; }
+.fav-item:last-child { border-bottom: none; }
+.fav-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.fav-item-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--label);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fav-item-sub {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--label-2);
+}
+.fav-item-remove {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  color: var(--label-3);
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+.fav-item-remove:active { background: var(--bg-tint); }
+
 /* ----- Responsive ----- */
 @media (max-width: 360px) {
-  .strip li { font-size: 14px; }
-  .reel-label { font-size: 10px; }
+  .chip { font-size: 13px; padding: 7px 12px; }
+  .filter-label { font-size: 11px; }
 }

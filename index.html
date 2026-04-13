@@ -11,13 +11,16 @@
     <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <title>Urban Spoon</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icon-192.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon-192.svg" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="catmode.css" />
   </head>
   <body>
     <div class="app">
       <header class="navbar">
-        <button class="navbtn" id="enableMotionBtn" aria-label="Enable shake to spin">
+        <button class="navbtn" id="enableMotionBtn" aria-label="Enable shake">
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path
               fill="currentColor"
@@ -26,49 +29,55 @@
           </svg>
         </button>
         <div class="navtitle">Urbanspoon</div>
-        <div class="navbtn-spacer"></div>
+        <button class="navbtn" id="favNavBtn" aria-label="Saved restaurants">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
       </header>
 
       <main class="content">
         <h1 class="largetitle">Urbanspoon</h1>
-        <p class="subtitle">Shake, spin, eat.</p>
+        <p class="subtitle">Find your next spot.</p>
 
-        <section class="picker-card">
-          <div class="reels" id="reels">
-            <div class="reel" data-reel="neighborhood">
-              <div class="reel-header">
-                <span class="reel-label">Area</span>
-              </div>
-              <div class="window">
-                <div class="selection-band"></div>
-                <ul class="strip" data-strip="neighborhood"></ul>
-              </div>
-            </div>
+        <section class="filter-card">
+          <div class="filter-row" data-filter="neighborhood">
+            <span class="filter-row-label">Area</span>
+            <span class="filter-row-value" data-value="neighborhood">Any</span>
+            <svg class="filter-chevron" viewBox="0 0 12 12" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 2l4 4-4 4"/></svg>
+          </div>
+          <div class="filter-options" data-options="neighborhood"></div>
 
-            <div class="reel" data-reel="cuisine">
-              <div class="reel-header">
-                <span class="reel-label">Cuisine</span>
-              </div>
-              <div class="window">
-                <div class="selection-band"></div>
-                <ul class="strip" data-strip="cuisine"></ul>
-              </div>
-            </div>
+          <div class="filter-row" data-filter="cuisine">
+            <span class="filter-row-label">Cuisine</span>
+            <span class="filter-row-value" data-value="cuisine">Any</span>
+            <svg class="filter-chevron" viewBox="0 0 12 12" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 2l4 4-4 4"/></svg>
+          </div>
+          <div class="filter-options" data-options="cuisine"></div>
 
-            <div class="reel" data-reel="price">
-              <div class="reel-header">
-                <span class="reel-label">Price</span>
-              </div>
-              <div class="window">
-                <div class="selection-band"></div>
-                <ul class="strip" data-strip="price"></ul>
-              </div>
-            </div>
+          <div class="filter-row" data-filter="price">
+            <span class="filter-row-label">Price</span>
+            <span class="filter-row-value" data-value="price">Any</span>
+            <svg class="filter-chevron" viewBox="0 0 12 12" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 2l4 4-4 4"/></svg>
+          </div>
+          <div class="filter-options" data-options="price"></div>
+
+          <div class="filter-row toggle" id="openNowRow">
+            <span class="filter-row-label">Open Now</span>
+            <button class="toggle-switch" id="openNowToggle" role="switch" aria-checked="false">
+              <span class="toggle-knob"></span>
+            </button>
           </div>
         </section>
 
-        <button class="spin-btn" id="spinBtn">Spin</button>
-        <p class="hint">Tap a row to lock it. Shake your phone to spin.</p>
+        <button class="discover-btn" id="discoverBtn">Surprise Me</button>
+        <p class="hint">Shake your phone for a quick pick.</p>
+
+        <!-- History carousel -->
+        <section class="history-section" id="historySection" hidden>
+          <h2 class="section-header">Recent</h2>
+          <div class="history-scroll" id="historyScroll"></div>
+        </section>
       </main>
 
       <!-- Result sheet -->
@@ -80,7 +89,15 @@
             <div class="result-photo-wrap" id="resultPhotoWrap" hidden>
               <img class="result-photo" id="resultPhoto" alt="" />
             </div>
-            <h2 class="result-name" id="resultName"></h2>
+            <div class="result-title-row">
+              <h2 class="result-name" id="resultName"></h2>
+              <button class="fav-btn" id="favBtn" aria-label="Save to favorites" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                  <path class="fav-outline" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  <path class="fav-filled" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </button>
+            </div>
             <div class="result-meta">
               <span class="tag" id="resultCuisine"></span>
               <span class="tag" id="resultNeighborhood"></span>
@@ -112,12 +129,31 @@
           </div>
         </div>
       </section>
+
+      <!-- Favorites sheet -->
+      <section class="sheet" id="favSheet" hidden>
+        <div class="sheet-backdrop" id="favSheetBackdrop"></div>
+        <div class="sheet-card">
+          <div class="grabber"></div>
+          <div class="sheet-content">
+            <h2 class="result-name">Saved</h2>
+            <div id="favList" class="fav-list"></div>
+            <p class="fav-empty" id="favEmpty">No saved restaurants yet.</p>
+          </div>
+        </div>
+      </section>
     </div>
 
     <script src="config.js"></script>
     <script src="data.js"></script>
     <script src="places.js"></script>
     <script src="app.js"></script>
+    <script src="history.js"></script>
     <script src="catmode.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      }
+    </script>
   </body>
 </html>
