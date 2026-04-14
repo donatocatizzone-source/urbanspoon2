@@ -66,16 +66,22 @@
 
   // ----- Open Now toggle -----
   const openNowToggle = document.getElementById("openNowToggle");
-  openNowToggle.addEventListener("click", () => {
+  function toggleOpenNow() {
     openNowFilter = !openNowFilter;
     openNowToggle.classList.toggle("on", openNowFilter);
     openNowToggle.setAttribute("aria-checked", String(openNowFilter));
     haptic(10);
-  });
+  }
+  openNowToggle.addEventListener("click", (e) => { e.stopPropagation(); toggleOpenNow(); });
+  document.getElementById("openNowRow").addEventListener("click", toggleOpenNow);
 
   // ----- Pick a restaurant -----
-  function pickRestaurant() {
-    const candidates = RESTAURANTS.filter((r) => {
+  function hasActiveFilters() {
+    return selected.neighborhood || selected.cuisine || selected.price !== null || openNowFilter;
+  }
+
+  function filterRestaurants() {
+    return RESTAURANTS.filter((r) => {
       if (openNowFilter && r.openNow === false) return false;
       if (selected.neighborhood && r.neighborhood !== selected.neighborhood) return false;
       if (selected.cuisine && r.cuisine !== selected.cuisine) return false;
@@ -85,18 +91,16 @@
       }
       return true;
     });
+  }
 
-    if (candidates.length === 0) {
-      // Relax price, then cuisine
-      const relaxed = RESTAURANTS.filter((r) => {
-        if (selected.neighborhood && r.neighborhood !== selected.neighborhood) return false;
-        if (selected.cuisine && r.cuisine !== selected.cuisine) return false;
-        return true;
-      });
-      if (relaxed.length) return pickDistinct(relaxed);
-      return pickDistinct(RESTAURANTS);
-    }
+  function pickFiltered() {
+    const candidates = filterRestaurants();
+    if (candidates.length === 0) return null;
     return pickDistinct(candidates);
+  }
+
+  function pickRandom() {
+    return pickDistinct(RESTAURANTS);
   }
 
   function pickDistinct(list) {
@@ -149,31 +153,36 @@
 
   window.catModeSpin = function (cuisine, forcePrice) {
     catModeOverride = { cuisine, forcePrice: forcePrice != null ? forcePrice : null };
-    discover();
+    runPick(pickWithCatOverride);
   };
 
-  // ----- Discover -----
+  // ----- Discover / Find -----
   const discoverBtn = document.getElementById("discoverBtn");
+  const findBtn = document.getElementById("findBtn");
 
-  async function discover() {
+  async function runPick(pickFn) {
     if (isSpinning) return;
     isSpinning = true;
     haptic(15);
 
     discoverBtn.classList.add("loading");
-    discoverBtn.textContent = "Finding...";
-
-    // Show skeleton loading state in the sheet
+    findBtn.classList.add("loading");
     showSkeleton();
 
-    const choice = catModeOverride ? pickWithCatOverride() : pickRestaurant();
+    const choice = pickFn();
 
-    // Hold the skeleton briefly so the animation reads
     await new Promise((r) => setTimeout(r, 900));
 
     discoverBtn.classList.remove("loading");
-    discoverBtn.textContent = "Surprise Me";
+    findBtn.classList.remove("loading");
     isSpinning = false;
+
+    if (!choice) {
+      hideResult();
+      showToast("No matches — try changing your filters.");
+      haptic([10, 40, 10]);
+      return;
+    }
 
     haptic([15, 50, 25]);
     lastResult = choice;
@@ -181,6 +190,9 @@
     revealResult(choice);
     if (typeof window.addToHistory === "function") window.addToHistory(choice);
   }
+
+  findBtn.addEventListener("click", () => runPick(pickFiltered));
+  discoverBtn.addEventListener("click", () => runPick(pickRandom));
 
   function showSkeleton() {
     resetDetails();
@@ -204,7 +216,6 @@
     showResult(r);
   }
 
-  discoverBtn.addEventListener("click", discover);
 
   // ----- Result card -----
   const resultEl = document.getElementById("result");
@@ -292,7 +303,7 @@
 
   document.getElementById("rejectBtn").addEventListener("click", () => {
     hideResult();
-    discover();
+    runPick(pickRandom);
   });
   document.getElementById("sheetBackdrop").addEventListener("click", hideResult);
 
@@ -306,7 +317,7 @@
       const now = Date.now();
       if (now - lastShakeAt > 1200) {
         lastShakeAt = now;
-        discover();
+        runPick(pickRandom);
       }
     }
   }

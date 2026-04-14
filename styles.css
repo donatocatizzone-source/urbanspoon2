@@ -249,42 +249,42 @@ body {
   transform: translateX(20px);
 }
 
-/* ----- Discover button ----- */
-.discover-btn {
+/* ----- Action buttons ----- */
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 0;
+}
+.action-btn {
   position: relative;
-  display: block;
-  width: 100%;
+  flex: 1;
   padding: 16px 0;
   font-family: var(--font);
   font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.2px;
-  color: #ffffff;
-  background: var(--tint);
   border: 0;
   border-radius: 14px;
   cursor: pointer;
   overflow: hidden;
   transition: opacity 0.15s ease, transform 0.1s ease;
 }
-.discover-btn:active {
+.action-btn:active {
   opacity: 0.85;
   transform: scale(0.99);
 }
-.discover-btn.loading {
+.action-btn.primary {
+  background: var(--tint);
+  color: #ffffff;
+}
+.action-btn.secondary {
+  background: var(--bg-elev);
+  color: var(--tint);
+  border: 1.5px solid var(--separator);
+}
+.action-btn.loading {
   pointer-events: none;
-}
-.discover-btn.loading::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
-  animation: btnShimmer 1s ease infinite;
-}
-@keyframes btnShimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
+  opacity: 0.7;
 }
 
 .hint {
