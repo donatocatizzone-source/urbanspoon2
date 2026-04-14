@@ -8,10 +8,37 @@
   --label: #1c1c1e;
   --label-2: rgba(60, 60, 67, 0.78);
   --label-3: rgba(60, 60, 67, 0.45);
-  --tint: #3d5a80;
-  --tint-2: #5a7ba8;
-  --green: #5b7553;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  /* Twilight blue — deep dusk to moonlit sky */
+  --twilight-1: #1e3a5f;
+  --twilight-2: #3d5a80;
+  --twilight-3: #5a7ba8;
+  /* Cypress green — evergreen shadow to sun-touched leaf */
+  --cypress-1: #2f4a3a;
+  --cypress-2: #5a7553;
+  --cypress-3: #8ab092;
+
+  --tint: var(--twilight-2);
+  --tint-2: var(--twilight-3);
+  --green: var(--cypress-2);
+
+  --gradient-twilight: linear-gradient(135deg, #1e3a5f 0%, #3d5a80 55%, #5a7ba8 100%);
+  --gradient-cypress: linear-gradient(135deg, #2f4a3a 0%, #5a7553 60%, #8ab092 100%);
+  --gradient-dusk: linear-gradient(
+    165deg,
+    #e6edf5 0%,
+    #f2f2f7 45%,
+    #eaf2ec 100%
+  );
+  --gradient-text: linear-gradient(120deg, #1e3a5f 0%, #3d5a80 45%, #5a7553 100%);
+
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-edge: rgba(255, 255, 255, 0.9);
+
+  --shadow-card:
+    0 1px 2px rgba(30, 58, 95, 0.05),
+    0 8px 24px rgba(30, 58, 95, 0.09);
 
   --font:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
@@ -27,9 +54,32 @@
     --label: #ffffff;
     --label-2: rgba(235, 235, 245, 0.6);
     --label-3: rgba(235, 235, 245, 0.3);
-    --tint: #5a7ba8;
-    --tint-2: #7a98c4;
-    --green: #6e8c64;
+
+    --twilight-1: #2d4a75;
+    --twilight-2: #5a7ba8;
+    --twilight-3: #8ea9d8;
+    --cypress-1: #3a5a4a;
+    --cypress-2: #6e8c64;
+    --cypress-3: #a2c49b;
+
+    --tint: var(--twilight-2);
+    --tint-2: var(--twilight-3);
+    --green: var(--cypress-2);
+
+    --gradient-twilight: linear-gradient(135deg, #2d4a75 0%, #4d6ea0 55%, #7a98c4 100%);
+    --gradient-cypress: linear-gradient(135deg, #3a5a4a 0%, #6e8c64 60%, #a2c49b 100%);
+    --gradient-dusk: linear-gradient(
+      165deg,
+      #0b172a 0%,
+      #000000 45%,
+      #0a1a14 100%
+    );
+    --gradient-text: linear-gradient(120deg, #8ea9d8 0%, #7a98c4 45%, #a2c49b 100%);
+
+    --glass-bg: rgba(28, 28, 30, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-edge: rgba(255, 255, 255, 0.14);
+
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.5);
   }
 }
@@ -57,6 +107,48 @@ body {
   min-height: 100dvh;
   display: flex;
   justify-content: center;
+  background: var(--gradient-dusk) fixed;
+  background-attachment: fixed;
+}
+
+/* Subtle color wash behind the app — twilight at top, cypress at bottom */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 20% 0%,
+      rgba(61, 90, 128, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 45% at 85% 100%,
+      rgba(90, 117, 83, 0.16),
+      transparent 70%
+    );
+}
+@media (prefers-color-scheme: dark) {
+  body::before {
+    background:
+      radial-gradient(
+        ellipse 75% 55% at 15% 0%,
+        rgba(90, 123, 168, 0.22),
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 65% 50% at 90% 100%,
+        rgba(110, 140, 100, 0.18),
+        transparent 70%
+      );
+  }
+}
+
+.app {
+  position: relative;
+  z-index: 1;
 }
 
 .app {
@@ -78,14 +170,16 @@ body {
   height: 44px;
   padding: 0 8px;
   padding-top: env(safe-area-inset-top);
-  background: rgba(242, 242, 247, 0.78);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(242, 242, 247, 0.55);
+  backdrop-filter: saturate(200%) blur(28px);
+  -webkit-backdrop-filter: saturate(200%) blur(28px);
   border-bottom: 0.5px solid var(--separator);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 @media (prefers-color-scheme: dark) {
   .navbar {
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 }
 .navtitle {
@@ -119,6 +213,10 @@ body {
   font-weight: 700;
   letter-spacing: -0.6px;
   color: var(--label);
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .subtitle {
   margin: 0 0 28px;
@@ -232,7 +330,8 @@ body {
   transition: background 0.25s ease;
 }
 .toggle-switch.on {
-  background: var(--green);
+  background: var(--gradient-cypress);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .toggle-knob {
   position: absolute;
@@ -274,13 +373,28 @@ body {
   transform: scale(0.99);
 }
 .action-btn.primary {
-  background: var(--tint);
+  background: var(--gradient-twilight);
   color: #ffffff;
+  box-shadow:
+    0 6px 18px rgba(30, 58, 95, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12);
 }
 .action-btn.secondary {
-  background: var(--bg-elev);
-  color: var(--tint);
-  border: 1.5px solid var(--separator);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  color: var(--twilight-1);
+  border: 1px solid rgba(61, 90, 128, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+@media (prefers-color-scheme: dark) {
+  .action-btn.secondary {
+    background: rgba(28, 28, 30, 0.65);
+    color: var(--twilight-3);
+    border: 1px solid rgba(142, 169, 216, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
 }
 .action-btn.loading {
   pointer-events: none;
@@ -309,8 +423,15 @@ body {
 .sheet-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(10, 20, 35, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   animation: fadeIn 0.25s ease;
+}
+@media (prefers-color-scheme: dark) {
+  .sheet-backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
 }
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -328,11 +449,59 @@ body {
   max-height: 85vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  background: var(--bg-elev);
+  background: var(--glass-bg);
+  backdrop-filter: saturate(200%) blur(40px);
+  -webkit-backdrop-filter: saturate(200%) blur(40px);
   color: var(--label);
-  border-radius: 16px 16px 0 0;
+  border-radius: 22px 22px 0 0;
+  border-top: 0.5px solid var(--glass-border);
+  box-shadow:
+    0 -10px 40px rgba(30, 58, 95, 0.14),
+    inset 0 1px 0 var(--glass-edge),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
   padding-bottom: max(20px, env(safe-area-inset-bottom));
   animation: slideUp 0.32s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+@media (prefers-color-scheme: dark) {
+  .sheet-card {
+    box-shadow:
+      0 -10px 40px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 var(--glass-edge),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* Tinted highlight glow at the top edge of the sheet — the "caustic" */
+.sheet-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(90, 123, 168, 0.14) 0%,
+    rgba(90, 117, 83, 0.05) 60%,
+    transparent 100%
+  );
+  border-radius: 22px 22px 0 0;
+  z-index: 0;
+}
+@media (prefers-color-scheme: dark) {
+  .sheet-card::before {
+    background: linear-gradient(
+      180deg,
+      rgba(142, 169, 216, 0.12) 0%,
+      rgba(162, 196, 155, 0.04) 60%,
+      transparent 100%
+    );
+  }
+}
+.sheet-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .grabber {
@@ -450,8 +619,11 @@ body {
   letter-spacing: -0.1px;
 }
 .tag.price {
-  background: var(--green);
+  background: var(--gradient-cypress);
   color: #ffffff;
+  box-shadow:
+    0 2px 8px rgba(47, 74, 58, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .result-rating {
@@ -525,13 +697,17 @@ body {
   color: var(--label);
 }
 .btn-primary {
-  background: var(--tint);
+  background: var(--gradient-twilight);
   color: #ffffff;
   text-decoration: none;
   text-align: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow:
+    0 4px 14px rgba(30, 58, 95, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 .btn-secondary:active,
 .btn-primary:active {

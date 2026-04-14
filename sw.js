@@ -1,5 +1,5 @@
 // Service Worker — basic cache-first for offline + Add to Home Screen support.
-const CACHE_NAME = "urbanspoon-v4";
+const CACHE_NAME = "urbanspoon-v5";
 const ASSETS = [
   "/",
   "/index.html",
